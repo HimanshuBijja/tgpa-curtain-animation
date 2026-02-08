@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - TGPA</title>
+    <style>
+        /* ==================== BASE STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ==================== SPLASH SCREEN (Behind Curtain) ==================== */
+        .splash-screen {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d2137 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        /* Logo container */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .logo-container.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .logo-container svg {
+            max-width: 350px;
+            max-height: 50vh;
+            width: auto;
+            height: auto;
+        }
+
+        /* Enter button */
+        .enter-btn {
+            display: inline-block;
+            padding: 16px 60px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(135deg, #1D3A6D 0%, #2a5298 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 10px 40px rgba(29, 58, 109, 0.4);
+        }
+
+        .enter-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .enter-btn:hover {
+            background: linear-gradient(135deg, #2a5298 0%, #3d6fc9 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(29, 58, 109, 0.6);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .enter-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* ==================== CURTAIN OVERLAY ==================== */
+        .curtain-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Left curtain panel */
+        .curtain-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    #6b1515 0%,
+                    #8b2020 15%,
+                    #a52a2a 30%,
+                    #c43c3c 50%,
+                    #a52a2a 70%,
+                    #8b2020 85%,
+                    #6b1515 100%);
+            transform: translateX(0);
+            transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Right curtain panel */
+        .curtain-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    #6b1515 0%,
+                    #8b2020 15%,
+                    #a52a2a 30%,
+                    #c43c3c 50%,
+                    #a52a2a 70%,
+                    #8b2020 85%,
+                    #6b1515 100%);
+            transform: translateX(0);
+            transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Curtain folds (vertical stripes for realism) */
+        .curtain-left::before,
+        .curtain-right::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(90deg,
+                    transparent 0px,
+                    transparent 30px,
+                    rgba(0, 0, 0, 0.1) 30px,
+                    rgba(0, 0, 0, 0.1) 35px,
+                    transparent 35px,
+                    transparent 60px,
+                    rgba(255, 255, 255, 0.05) 60px,
+                    rgba(255, 255, 255, 0.05) 62px);
+            pointer-events: none;
+        }
+
+        /* Curtain valance (top decorative border) */
+        .curtain-left::after,
+        .curtain-right::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(180deg,
+                    #4a0f0f 0%,
+                    #6b1515 50%,
+                    transparent 100%);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Curtain open state */
+        .curtain-container.open .curtain-left {
+            transform: translateX(-100%);
+        }
+
+        .curtain-container.open .curtain-right {
+            transform: translateX(100%);
+        }
+
+        /* ==================== STARS ANIMATION ==================== */
+        @keyframes starGlow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 6px rgba(251, 243, 197, 0.6));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 5px rgba(255, 255, 255, 1)) drop-shadow(0 0 10px rgba(251, 243, 197, 0.9)) drop-shadow(0 0 12px rgba(251, 243, 197, 0.5));
+            }
+        }
+
+        #star-right-1,
+        #star-right-2,
+        #star-right-3,
+        #star-left-1,
+        #star-left-2,
+        #star-left-3 {
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 6px rgba(251, 243, 197, 0.4));
+            animation: starGlow 2s ease-in-out infinite;
+        }
+
+        #star-right-1 {
+            animation-delay: 0s;
+        }
+
+        #star-left-1 {
+            animation-delay: 0.3s;
+        }
+
+        #star-right-2 {
+            animation-delay: 0.6s;
+        }
+
+        #star-left-2 {
+            animation-delay: 0.9s;
+        }
+
+        #star-right-3 {
+            animation-delay: 1.2s;
+        }
+
+        #star-left-3 {
+            animation-delay: 1.5s;
+        }
+
+        /* Leaf animation - start hidden */
+        svg [id^="leaf-"] {
+            opacity: 0;
+            transition: opacity 0.4s ease-out;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .logo-container svg {
+                max-width: 280px;
+            }
+
+            .enter-btn {
+                padding: 14px 45px;
+                font-size: 16px;
+                letter-spacing: 2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-container svg {
+                max-width: 220px;
+            }
+
+            .enter-btn {
+                padding: 12px 35px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Splash Screen (Revealed after curtain opens) -->
+    <div class="splash-screen">
+        <div class="logo-container" id="logo-container">
+            <!-- SVG Logo -->
+            <svg version="1.1" id="svg1" width="559.37012" height="793.70081" viewBox="0 0 559.37012 793.70081"
+                xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                <defs id="defs1">
+                    <linearGradient x1="268.97" y1="211.91" x2="92.839996" y2="399.26999" gradientUnits="userSpaceOnUse"
+                        spreadMethod="pad" id="linearGradient2">
+                        <stop style="stop-opacity:1;stop-color:#121b36" offset="0" id="stop1" />
+                        <stop style="stop-opacity:1;stop-color:#1e3a6d" offset="1" id="stop2" />
+                    </linearGradient>
+                    <linearGradient x1="108.27" y1="266.64001" x2="313.56" y2="272.67999" gradientUnits="userSpaceOnUse"
+                        spreadMethod="pad" id="linearGradient8">
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0" id="stop3" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.22" id="stop4" />
+                        <stop style="stop-opacity:1;stop-color:#d6d0b2" offset="0.42" id="stop5" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.62" id="stop6" />
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0.82" id="stop7" />
+                        <stop style="stop-opacity:1;stop-color:#f9f3c3" offset="1" id="stop8" />
+                    </linearGradient>
+                    <linearGradient x1="282.92001" y1="394.70001" x2="238.13" y2="304.92999"
+                        gradientUnits="userSpaceOnUse" spreadMethod="pad" id="linearGradient14">
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0" id="stop9" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.22" id="stop10" />
+                        <stop style="stop-opacity:1;stop-color:#d6d0b2" offset="0.42" id="stop11" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.62" id="stop12" />
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0.82" id="stop13" />
+                        <stop style="stop-opacity:1;stop-color:#f9f3c3" offset="1" id="stop14" />
+                    </linearGradient>
+                    <linearGradient x1="163.92999" y1="378.73001" x2="258.42999" y2="334.14999"
+                        gradientUnits="userSpaceOnUse" spreadMethod="pad" id="linearGradient20">
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0" id="stop15" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.22" id="stop16" />
+                        <stop style="stop-opacity:1;stop-color:#d6d0b2" offset="0.42" id="stop17" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.62" id="stop18" />
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0.82" id="stop19" />
+                        <stop style="stop-opacity:1;stop-color:#f9f3c3" offset="1" id="stop20" />
+                    </linearGradient>
+                    <linearGradient x1="193.77" y1="369.23001" x2="227.98" y2="368.45001" gradientUnits="userSpaceOnUse"
+                        spreadMethod="pad" id="linearGradient23">
+                        <stop style="stop-opacity:1;stop-color:#f7a800" offset="0" id="stop21" />
+                        <stop style="stop-opacity:1;stop-color:#ffffff" offset="0.4" id="stop22" />
+                        <stop style="stop-opacity:1;stop-color:#f7a800" offset="1" id="stop23" />
+                    </linearGradient>
+                    <linearGradient x1="197.33" y1="338.14001" x2="223.67999" y2="323.73999"
+                        gradientUnits="userSpaceOnUse" spreadMethod="pad" id="linearGradient29">
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0" id="stop24" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.22" id="stop25" />
+                        <stop style="stop-opacity:1;stop-color:#d6d0b2" offset="0.42" id="stop26" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.62" id="stop27" />
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0.82" id="stop28" />
+                        <stop style="stop-opacity:1;stop-color:#f9f3c3" offset="1" id="stop29" />
+                    </linearGradient>
+                    <linearGradient x1="128.39" y1="379.98999" x2="178.08" y2="304.60999" gradientUnits="userSpaceOnUse"
+                        spreadMethod="pad" id="linearGradient35">
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0" id="stop30" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.22" id="stop31" />
+                        <stop style="stop-opacity:1;stop-color:#d6d0b2" offset="0.42" id="stop32" />
+                        <stop style="stop-opacity:1;stop-color:#fbf3c5" offset="0.62" id="stop33" />
+                        <stop style="stop-opacity:1;stop-color:#b7ac71" offset="0.82" id="stop34" />
+                        <stop style="stop-opacity:1;stop-color:#f9f3c3" offset="1" id="stop35" />
+                    </linearGradient>
+                </defs>
+                <g id="layer-Pr12">
+                    <path id="path1"
+                        d="m 197.0311,154.489 c -76.809,44.1088 -113.025,128.249 -112.3554,252.421 47.9117,5.8756 86.5205,17.6502 117.7472,35.3268 5.472,3.1087 10.4258,3.1087 14.8601,0 29.338,-16.9047 68.635,-28.4877 116.9333,-34.7451 C 340.437,290.5639 301.5624,206.229 221.3011,154.489 c -8.4895,-5.1735 -15.3071,-4.909 -24.27,0"
+                        style="fill:#009ee3;fill-opacity:1;fill-rule:evenodd;stroke:none"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                    <path id="path2"
+                        d="m 326.4741,400.3586 c -39.0835,5.7177 -80.3495,16.0137 -114.5858,35.7026 l -0.4348,0.2506 -0.4096,0.2874 c -1.1013,0.7733 -2.2365,0.0201 -3.2899,-0.5768 -35.1796,-19.9239 -75.0583,-30.5771 -114.9165,-36.2518 0.9278,-92.7085 22.9008,-189.2979 109.3501,-239.0068 5.3096,-2.8939 8.1896,-3.4551 13.4637,-0.2752 22.972,14.8291 43.3815,33.01 60.0404,54.7387 40.8793,53.3188 52.9724,119.4191 50.7824,185.1313"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)"
+                        style="fill:url(#linearGradient2);fill-rule:evenodd;stroke:none" />
+                    <path id="path8"
+                        d="m 107.1683,288.7274 c 67.5148,-13.1403 134.0133,-13.0612 206.0657,0.0924 -3.6068,-12.1757 -8.5362,-24.2589 -14.1568,-35.8118 -65.016,-10.326 -117.7358,-10.6061 -178.9792,0.0329 -5.0661,11.2977 -9.5927,23.4881 -12.9297,35.6865"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)"
+                        style="fill:url(#linearGradient8);fill-rule:evenodd;stroke:none" />
+                    <!-- Leaf elements -->
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 256.0944,311.4034 c 10.2787,2.1977 4.8299,13.6043 5.5987,20.7683 -5.5834,-5.0017 -6.1804,-12.8664 -5.5987,-20.7683"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-8" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 263.9945,320.5936 c 9.3555,3.9546 2.5302,14.8833 2.1915,22.4294 -4.5176,-6.0939 -3.913,-14.339 -2.1915,-22.4294 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-12" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 269.8948,331.2006 c 8.3767,5.4209 0.4703,15.7291 -0.8319,23.4748 -3.5017,-6.9384 -1.8545,-15.366 0.8319,-23.4748 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-16" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 244.3708,298.2322 c 3.2355,8.9768 16.6604,4.4096 21.8832,7.0172 -3.9362,-7.1456 -12.9963,-9.883 -21.8832,-7.0172 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-2" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 254.4826,305.6485 c 1.9565,9.7067 15.3164,6.8454 19.9624,10.2572 -2.8519,-7.9158 -11.1373,-11.9894 -19.9624,-10.2572 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-6" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 263.1144,314.5368 c 0.5862,10.3099 13.6508,9.2832 17.6162,13.4776 -1.6702,-8.5884 -9.006,-13.9909 -17.6162,-13.4776 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-10" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 269.7279,324.7787 c -0.648,10.6968 11.9616,11.3247 15.2623,16.1563 -0.5925,-9.0632 -6.9707,-15.5764 -15.2623,-16.1563 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-14" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 274.9833,336.2318 c -2.1467,10.6857 9.3217,13.3336 11.6461,18.7344 0.7733,-9.2367 -4.1295,-16.8244 -11.6461,-18.7344 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-18" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 278.2993,349.4044 c -3.5558,10.7212 6.8995,15.2637 8.3239,21.2184 2.0495,-9.4362 -1.4987,-18.0601 -8.3239,-21.2184 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-22" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 279.436,363.1944 c -4.9723,10.5185 4.1683,16.9741 4.6014,23.3849 3.3622,-9.439 1.3377,-18.9708 -4.6014,-23.3849 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-26" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 274.2395,343.5565 c 6.9891,7.0883 -2.0557,16.4038 -4.5054,24.2113 -2.1807,-7.8092 0.7005,-16.2661 4.5054,-24.2113 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-20" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 276.4216,356.7093 c 5.6934,8.3454 -4.1295,16.6464 -7.4917,24.355 -1.0318,-8.3875 2.8256,-16.7038 7.4917,-24.355 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-24" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 276.6521,370.5299 c 4.2936,9.4546 -6.1325,16.5954 -10.3471,24.0689 0.1347,-8.8174 4.9014,-16.846 10.3471,-24.0689 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-28" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 279.6866,378.0079 c -8.358,6.1232 -5.0573,16.475 -7.7562,22.0799 6.7385,-6.0891 9.7979,-15.1696 7.7562,-22.0799 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-30" />
+                    <path style="fill:url(#linearGradient14);fill-rule:evenodd;stroke:none"
+                        d="m 246.8948,303.7292 c 10.8899,0.6525 6.717,12.2709 8.4232,18.9788 -6.4001,-3.9765 -8.0178,-11.3789 -8.4232,-18.9788 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-4" />
+                    <!-- Center gear/emblem -->
+                    <path id="path20"
+                        d="m 214.3953,406.6951 -0.3557,-6.0721 9.0632,-2.1498 1.5559,5.7442 10.8034,-3.8651 -2.7964,-5.404 7.407,-5.65 3.7567,4.6154 8.2962,-7.9251 -4.7512,-3.7984 4.4666,-8.1757 5.3113,2.6881 4.3551,-10.6146 -5.8864,-1.5373 0.7563,-9.2846 5.9453,0.2954 -0.3387,-11.4684 -6.0026,0.9899 -3.0856,-8.7894 5.5509,-2.1484 -4.9754,-10.3394 -5.0791,3.3455 -6.3956,-6.7743 4.1976,-4.2207 -8.7492,-7.4223 -3.2805,5.1239 -8.5978,-3.5881 2.1189,-5.5632 -11.012,-3.2216 -0.9142,6.0148 -9.3121,0.218 -0.3279,-5.9437 -11.3692,1.5358 1.6115,5.8663 -8.4201,3.9889 -2.7158,-5.2974 -9.7623,6.0274 3.8574,4.7032 -6.0692,7.0682 -4.6353,-3.7335 -6.4663,9.4779 5.4379,2.7266 -2.671,8.9258 -5.7535,-1.5251 -2.0523,11.2873 6.0766,0.2801 1.1909,9.2395 -5.8771,0.9465 2.7173,11.1467 5.6653,-2.2164 4.8458,7.9577 -4.9833,3.2538 7.0141,9.0789 4.2746,-4.3274 7.6638,5.2971 -3.2296,5.0003 10.1013,5.4411 2.145,-5.6931 9.1548,1.7229 -0.9156,5.8805 z m -4.6786,-15.4355 c 20.5271,0 37.1687,-16.6419 37.1687,-37.169 0,-20.5285 -16.6416,-37.1687 -37.1687,-37.1687 -20.5285,0 -37.1687,16.6402 -37.1687,37.1687 0,20.5271 16.6402,37.169 37.1687,37.169"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)"
+                        style="fill:url(#linearGradient20);fill-rule:evenodd;stroke:none" />
+                    <!-- Fire element -->
+                    <g id="fire">
+                        <path id="path23"
+                            d="m 219.1898,345.7094 c 2.0634,4.5009 1.4046,8.0456 -1.2325,10.8992 3.0422,-14.0496 -17.4724,-4.3755 -7.9716,9.7268 -4.0011,-3.0917 -5.9683,-7.249 -4.6845,-13.1045 -1.9349,1.4615 -2.4934,4.2298 -2.0262,7.9713 -2.651,-4.0476 -3.3097,-8.0518 -0.3155,-11.9787 -1.8281,0.5443 -2.886,2.473 -3.5124,5.1781 -0.8507,-3.3517 -0.8121,-6.3567 0.9419,-8.6922 z m -21.5461,-0.9 c -3.9005,3.8897 -6.1339,8.4028 -6.3026,13.6908 0.8941,-2.1901 2.6201,-3.5898 4.9539,-4.0986 -3.7846,5.4456 -3.9765,11.2643 -0.6293,17.5187 -0.489,-5.8153 0.8736,-10.7879 7.1175,-7.7687 4.117,1.9922 9.2783,10.2943 -2.6153,17.5867 4.7095,-0.0864 8.1723,-3.6516 10.3592,-9.818 -1.4538,6.199 -0.5737,11.7113 3.3778,15.9876 -2.2394,-6.8468 -0.1763,-11.1248 1.802,-13.7386 1.313,-1.7354 7.9761,-5.2974 7.6093,6.8485 4.1451,-6.683 -0.3926,-12.5465 -4.8702,-17.1956 -3.1445,-3.2635 -5.2322,-6.6041 -2.5149,-10.2758 -1.4414,9.4887 11.3043,9.6525 12.1598,15.4927 0.0649,-5.2154 -3.9935,-7.4378 -4.7823,-11.3834 -1.0749,-5.3713 2.5041,-8.8469 -0.9139,-12.8463 z"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)"
+                            style="fill:url(#linearGradient23);fill-rule:evenodd;stroke:none" />
+                        <path id="path29"
+                            d="m 194.9803,343.7283 h -0.487 c 0.1114,-0.7812 0.2596,-1.5313 0.447,-2.2504 h 30.4021 c 0.15,0.7069 0.2568,1.4414 0.3141,2.2056 z m 0.1624,-2.9713 c 1.4896,-4.9181 4.824,-8.3424 9.843,-10.404 0.2721,-3.3503 0.5519,-7.5988 0.832,-13.2239 1.2977,-0.2041 2.6804,-0.2676 4.1312,-0.2506 1.4491,0.0187 3.0654,0.0899 4.5717,0.3558 0.2273,5.6528 0.447,9.8195 0.733,13.2083 5.3221,2.2039 8.6752,5.6129 9.917,10.3144 z"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)"
+                            style="fill:url(#linearGradient29);fill-rule:evenodd;stroke:none" />
+                    </g>
+                    <!-- Left side leaves -->
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 163.6997,311.4034 c -10.279,2.1977 -4.8303,13.6043 -5.5988,20.7683 5.5832,-5.0017 6.1801,-12.8664 5.5988,-20.7683"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-7" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 155.7995,320.5936 c -9.3558,3.9546 -2.5305,14.8833 -2.1918,22.4294 4.5179,-6.0939 3.913,-14.339 2.1918,-22.4294 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-11" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 149.8989,331.2006 c -8.3764,5.4209 -0.47,15.7291 0.8322,23.4748 3.5017,-6.9384 1.8545,-15.366 -0.8322,-23.4748 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-15" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 175.4232,298.2322 c -3.2355,8.9768 -16.6604,4.4096 -21.8818,7.0172 3.9345,-7.1456 12.9949,-9.883 21.8818,-7.0172 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-1" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 165.3111,305.6485 c -1.9564,9.7067 -15.3161,6.8454 -19.9624,10.2572 2.852,-7.9158 11.139,-11.9894 19.9624,-10.2572 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-5" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 156.6794,314.5368 c -0.5862,10.3099 -13.6491,9.2832 -17.6162,13.4776 1.6704,-8.5884 9.0062,-13.9909 17.6162,-13.4776 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-9" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 150.0661,324.7787 c 0.648,10.6968 -11.9602,11.3247 -15.2623,16.1563 0.5925,-9.0632 6.9707,-15.5764 15.2623,-16.1563 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-13" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 144.8104,336.2318 c 2.147,10.6857 -9.3214,13.3336 -11.6461,18.7344 -0.7733,-9.2367 4.1295,-16.8244 11.6461,-18.7344 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-17" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 141.4962,349.4044 c 3.554,10.7212 -6.9013,15.2637 -8.3257,21.2184 -2.0491,-9.4362 1.4987,-18.0601 8.3257,-21.2184 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-21" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 140.3578,363.1944 c 4.9725,10.5185 -4.1681,16.9741 -4.6012,23.3849 -3.3625,-9.439 -1.338,-18.9708 4.6012,-23.3849 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-25" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 145.5545,343.5565 c -6.9894,7.0883 2.0554,16.4038 4.5054,24.2113 2.1807,-7.8092 -0.7007,-16.2661 -4.5054,-24.2113 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-19" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 143.3721,356.7093 c -5.6931,8.3454 4.1295,16.6464 7.492,24.355 1.0315,-8.3875 -2.8256,-16.7038 -7.492,-24.355 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-23" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 143.1417,370.5299 c -4.2934,9.4546 6.1324,16.5954 10.347,24.0689 -0.1347,-8.8174 -4.9014,-16.846 -10.347,-24.0689 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-27" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 140.1072,378.0079 c 8.3579,6.1232 5.0576,16.475 7.7564,22.0799 -6.7388,-6.0891 -9.7979,-15.1696 -7.7564,-22.0799 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-29" />
+                    <path style="fill:url(#linearGradient35);fill-rule:evenodd;stroke:none"
+                        d="m 172.8989,303.7292 c -10.8898,0.6525 -6.7169,12.2709 -8.4228,18.9788 6.4014,-3.9765 8.0178,-11.3789 8.4228,-18.9788 z"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" id="leaf-3" />
+                    <!-- Stars -->
+                    <g id="stars">
+                        <path id="star-right-1"
+                            d="m 296.4878,326.6209 -1.0503,-4.479 -4.4464,0.4856 3.9345,-2.382 -1.8357,-4.0785 3.4829,3.0053 3.3115,-3.0053 -1.7833,4.2395 3.882,2.221 -4.5842,-0.3853 z"
+                            style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                        <path id="star-right-2"
+                            d="m 302.8569,304.7499 -1.2883,-5.4969 -5.4567,0.597 4.8285,-2.9246 -2.2532,-5.0051 4.2732,3.6904 4.0646,-3.6904 -2.1883,5.2047 4.7636,2.725 -5.6254,-0.4731 z"
+                            style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                        <path id="star-right-3"
+                            d="m 283.9972,308.0319 -1.2883,-5.4953 -5.455,0.5953 4.8285,-2.9231 -2.2535,-5.0048 4.2735,3.6887 4.0629,-3.6887 -2.1884,5.203 4.7651,2.7249 -5.6251,-0.4731 z"
+                            style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                        <path id="star-left-1"
+                            d="m 124.0067,326.6209 1.0502,-4.479 4.4467,0.4856 -3.9347,-2.382 1.8357,-4.0785 -3.483,3.0053 -3.3114,-3.0053 1.7833,4.2395 -3.8821,2.221 4.5842,-0.3853 z"
+                            style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                        <path id="star-left-2"
+                            d="m 117.6378,304.7499 1.2883,-5.4969 5.4565,0.597 -4.8286,-2.9246 2.2519,-5.0051 -4.2719,3.6904 -4.0646,-3.6904 2.1887,5.2047 -4.7636,2.725 5.625,-0.4731 z"
+                            style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                        <path id="star-left-3"
+                            d="m 136.4973,308.0319 1.2883,-5.4953 5.455,0.5953 -4.8285,-2.9231 2.2535,-5.0048 -4.2735,3.6887 -4.0629,-3.6887 2.1883,5.203 -4.765,2.7249 5.6251,-0.4731 z"
+                            style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+                            transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                    </g>
+                    <!-- Text paths -->
+                    <path id="path42"
+                        d="m 172.5123,219.4322 v 9.7841 h 2.0029 v -4.0865 l 2.4994,4.0865 h 2.2799 l -2.7794,-4.0601 2.954,-5.724 h -2.2456 l -1.9812,4.0459 -0.7271,-1.0795 v -2.9664 z m 7.9792,0 v 9.7841 h 2.1065 l 2.8598,-6.8426 -0.0572,6.8426 h 1.9301 v -9.7841 h -2.0849 l -2.8828,6.8544 0.0572,-6.8544 z m 10.5837,4.8889 c 0,-1.6101 0.1052,-2.6232 0.317,-3.0393 0.212,-0.419 0.6046,-0.6279 1.1738,-0.6279 0.5601,0 0.9451,0.2041 1.1523,0.614 0.2072,0.4085 0.3092,1.4275 0.3092,3.0532 0,1.6271 -0.1051,2.6461 -0.3155,3.0637 -0.2086,0.413 -0.5952,0.6219 -1.1599,0.6219 -0.5661,0 -0.9527,-0.2089 -1.1631,-0.6219 -0.2086,-0.4176 -0.3138,-1.4366 -0.3138,-3.0637 z m -2.0897,0.003 c 0,1.0361 0.0528,1.8666 0.1625,2.4869 0.11,0.6202 0.2831,1.0873 0.5136,1.4011 0.32,0.4456 0.699,0.7611 1.1429,0.9527 0.4408,0.1905 1.0239,0.2863 1.7476,0.2863 0.7223,0 1.3053,-0.0958 1.7461,-0.2863 0.4425,-0.1916 0.8261,-0.5071 1.1492,-0.9527 0.2322,-0.3231 0.4022,-0.7917 0.5088,-1.4119 0.1083,-0.6188 0.1624,-1.4414 0.1624,-2.4761 0,-1.0301 -0.0541,-1.8544 -0.1638,-2.4746 -0.1097,-0.6202 -0.2801,-1.0905 -0.5074,-1.4137 -0.3231,-0.4456 -0.7067,-0.7625 -1.1492,-0.9527 -0.4408,-0.1902 -1.0238,-0.2863 -1.7461,-0.2863 -0.7237,0 -1.3068,0.0961 -1.7476,0.2863 -0.4439,0.1902 -0.8229,0.5071 -1.1429,0.9527 -0.2305,0.3138 -0.4036,0.781 -0.5136,1.4012 -0.1097,0.6185 -0.1625,1.4508 -0.1625,2.4871 z"
+                        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                        transform="matrix(1.3333333,0,0,-1.3333333,0,793.7008)" />
+                </g>
+            </svg>
+        </div>
+
+        <!-- Enter Button -->
+        <a href="" class="enter-btn" id="enter-btn">redirect-moodle</a>
+    </div>
+
+    <!-- Theatre Curtain Overlay -->
+    <div class="curtain-container" id="curtain-container">
+        <div class="curtain-left"></div>
+        <div class="curtain-right"></div>
+    </div>
+
+    <script>
+        /**
+         * Theatre Curtain Animation Script
+         * Handles the curtain opening animation and splash screen reveal
+         */
+        (function () {
+            'use strict';
+
+            // DOM element references
+            const curtainContainer = document.getElementById('curtain-container');
+            const logoContainer = document.getElementById('logo-container');
+            const enterBtn = document.getElementById('enter-btn');
+
+            // Animation timing configuration (in milliseconds)
+            const CURTAIN_DELAY = 500;      // Delay before curtain starts opening
+            const CURTAIN_DURATION = 2000;  // Duration of curtain animation
+            const LOGO_DELAY = 800;         // Delay after curtain starts for logo to appear
+            const BUTTON_DELAY = 1200;      // Delay after curtain starts for button to appear
+            const LEAF_ANIMATION_DELAY = 50; // Delay between each leaf animation
+
+            /**
+             * Animate leaf elements sequentially
+             * Creates a flowing reveal effect for the emblem leaves
+             */
+            function animateLeaves() {
+                for (let i = 1; i <= 30; i++) {
+                    const leaf = document.getElementById(`leaf-${i}`);
+                    if (leaf) {
+                        setTimeout(() => {
+                            leaf.style.opacity = '1';
+                        }, i * LEAF_ANIMATION_DELAY);
+                    }
+                }
+            }
+
+            /**
+             * Open the theatre curtain
+             * Triggers CSS transition to split curtains left and right
+             */
+            function openCurtain() {
+                curtainContainer.classList.add('open');
+            }
+
+            /**
+             * Show the logo with fade-in and scale animation
+             */
+            function showLogo() {
+                logoContainer.classList.add('visible');
+                animateLeaves();
+            }
+
+            /**
+             * Show the enter button and enable interaction
+             */
+            function showEnterButton() {
+                enterBtn.classList.add('visible');
+            }
+
+            /**
+             * Initialize and start the animation sequence
+             * Called when the page loads
+             */
+            function startAnimation() {
+                // Step 1: Open the curtain after initial delay
+                setTimeout(openCurtain, CURTAIN_DELAY);
+
+                // Step 2: Show logo as curtain opens
+                setTimeout(showLogo, CURTAIN_DELAY + LOGO_DELAY);
+
+                // Step 3: Show enter button after logo appears
+                setTimeout(showEnterButton, CURTAIN_DELAY + CURTAIN_DURATION + BUTTON_DELAY);
+            }
+
+            // Start animation when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', startAnimation);
+            } else {
+                startAnimation();
+            }
+        })();
+    </script>
+</body>
+
+</html>
