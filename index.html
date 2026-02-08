@@ -114,13 +114,13 @@
             width: 50%;
             height: 100%;
             background: linear-gradient(90deg,
-                    #6b1515 0%,
-                    #8b2020 15%,
-                    #a52a2a 30%,
-                    #c43c3c 50%,
-                    #a52a2a 70%,
-                    #8b2020 85%,
-                    #6b1515 100%);
+                    #0d1f3c 0%,
+                    #152a4d 15%,
+                    #1D3A6D 30%,
+                    #2a5298 50%,
+                    #1D3A6D 70%,
+                    #152a4d 85%,
+                    #0d1f3c 100%);
             transform: translateX(0);
             transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
@@ -134,13 +134,13 @@
             width: 50%;
             height: 100%;
             background: linear-gradient(90deg,
-                    #6b1515 0%,
-                    #8b2020 15%,
-                    #a52a2a 30%,
-                    #c43c3c 50%,
-                    #a52a2a 70%,
-                    #8b2020 85%,
-                    #6b1515 100%);
+                    #0d1f3c 0%,
+                    #152a4d 15%,
+                    #1D3A6D 30%,
+                    #2a5298 50%,
+                    #1D3A6D 70%,
+                    #152a4d 85%,
+                    #0d1f3c 100%);
             transform: translateX(0);
             transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
@@ -177,8 +177,8 @@
             width: 100%;
             height: 60px;
             background: linear-gradient(180deg,
-                    #4a0f0f 0%,
-                    #6b1515 50%,
+                    #0a1628 0%,
+                    #0d1f3c 50%,
                     transparent 100%);
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
@@ -493,6 +493,13 @@
             align-items: center;
             justify-content: center;
             opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        #loader #splash-screen.zoom-out {
+            opacity: 0;
+            transform: scale(1.3);
         }
 
         #loader #splash-screen .splash-wrapper {
@@ -899,6 +906,17 @@
         }
 
         /**
+         * Start the zoom-out animation and then redirect
+         */
+        function startZoomOutAndRedirect() {
+            const splashScreen = document.getElementById('splash-screen');
+            splashScreen.classList.add('zoom-out');
+
+            // Wait for animation to complete (800ms) then redirect
+            setTimeout(redirectToLMS, 800);
+        }
+
+        /**
          * Redirect to LMS
          */
         function redirectToLMS() {
@@ -919,8 +937,8 @@
             // Step 3: Show enter button after logo appears
             setTimeout(showEnterButton, CURTAIN_DELAY + CURTAIN_DURATION + BUTTON_DELAY);
 
-            // Step 4: Redirect to LMS 2 seconds after animation completes
-            setTimeout(redirectToLMS, CURTAIN_DELAY + CURTAIN_DURATION + 1500);
+            // Step 4: Wait 500ms after curtain opens, then start zoom-out animation and redirect
+            setTimeout(startZoomOutAndRedirect, CURTAIN_DELAY + CURTAIN_DURATION + 500);
         }
 
         // Start animation when DOM is ready
