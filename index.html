@@ -899,6 +899,13 @@
         }
 
         /**
+         * Redirect to LMS
+         */
+        function redirectToLMS() {
+            window.location.href = 'https://lms.tgpaonline.in/?redirect=0';
+        }
+
+        /**
          * Initialize and start the animation sequence
          * Called when the page loads
          */
@@ -911,6 +918,9 @@
 
             // Step 3: Show enter button after logo appears
             setTimeout(showEnterButton, CURTAIN_DELAY + CURTAIN_DURATION + BUTTON_DELAY);
+
+            // Step 4: Redirect to LMS 2 seconds after animation completes
+            setTimeout(redirectToLMS, CURTAIN_DELAY + CURTAIN_DURATION + 1500);
         }
 
         // Start animation when DOM is ready
@@ -953,10 +963,12 @@
 
         // Start animation when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', animateLeaves);
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(animateLeaves, 500);
+            });
         } else {
-            // Small delay to ensure SVG is fully rendered
-            setTimeout(animateLeaves, 100);
+            // 500ms delay before starting splash animation
+            setTimeout(animateLeaves, 500);
         }
     })();
 
