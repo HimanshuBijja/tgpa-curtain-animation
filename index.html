@@ -192,6 +192,36 @@
             transform: translateX(100%);
         }
 
+        /* Center trigger with tie.png */
+        .curtain-trigger {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            z-index: 5;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .curtain-trigger img {
+            max-width: 200px;
+            max-height: 200px;
+            cursor: pointer;
+            transition: opacity 150ms ease-out;
+        }
+
+        .curtain-trigger img.fade-out {
+            opacity: 0;
+        }
+
+        .curtain-container.open .curtain-trigger {
+            pointer-events: none;
+        }
+
         /* ==================== STARS ANIMATION ==================== */
         @keyframes starGlow {
 
@@ -866,17 +896,34 @@
     <div class="curtain-container" id="curtain-container">
         <div class="curtain-left"></div>
         <div class="curtain-right"></div>
+        <div class="curtain-trigger">
+            <img src="tie.png" alt="Double-click to open" id="trigger-image">
+        </div>
     </div>
 
 
 </body>
 <script>
+    // Leaf animation function - called by showLogo() after double-click
+    const LEAF_DELAY = 80;
+    const TOTAL_LEAVES = 30;
+
+    function animateLeaves() {
+        for (let i = 1; i <= TOTAL_LEAVES; i++) {
+            const leaf = document.getElementById(`leaf-${i}`);
+            if (leaf) {
+                setTimeout(() => {
+                    leaf.style.transition = 'opacity 0.5s ease-out';
+                    leaf.style.opacity = '1';
+                }, i * LEAF_DELAY);
+            }
+        }
+    }
+
     (function () {
         'use strict';
-
         // DOM element references
         const curtainContainer = document.getElementById('curtain-container');
-        const logoContainer = document.getElementById('logo-container');
         const enterBtn = document.getElementById('enter-btn');
 
         // Animation timing configuration (in milliseconds)
@@ -891,12 +938,12 @@
         }
 
         /**
-         * Show the logo with fade-in and scale animation
+         * Show the logo by animating leaf elements
          */
         function showLogo() {
-            logoContainer.classList.add('visible');
             animateLeaves();
         }
+
 
         /**
          * Show the enter button and enable interaction
@@ -928,66 +975,25 @@
          * Called when the page loads
          */
         function startAnimation() {
-            // Step 1: Open the curtain after initial delay
-            setTimeout(openCurtain, CURTAIN_DELAY);
-
-            // Step 2: Show logo as curtain opens
-            setTimeout(showLogo, CURTAIN_DELAY + LOGO_DELAY);
-
-            // Step 3: Show enter button after logo appears
-            setTimeout(showEnterButton, CURTAIN_DELAY + CURTAIN_DURATION + BUTTON_DELAY);
-
-            // Step 4: Wait 500ms after curtain opens, then start zoom-out animation and redirect
-            setTimeout(startZoomOutAndRedirect, CURTAIN_DELAY + CURTAIN_DURATION + 500);
+            // Open the curtain
+            openCurtain();
+            // Show logo as curtain opens
+            setTimeout(showLogo, LOGO_DELAY);
+            // Show enter button after logo appears
+            setTimeout(showEnterButton, CURTAIN_DURATION + BUTTON_DELAY);
+            // Start zoom-out and redirect
+            setTimeout(startZoomOutAndRedirect, CURTAIN_DURATION + 500);
         }
 
-        // Start animation when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', startAnimation);
-        } else {
-            startAnimation();
-        }
-
-
-    })();
-
-
-    /**
-     * SVG Splash Screen Animation
-     * Animates the leaf elements sequentially and handles star glow effects
-     */
-    (function () {
-        'use strict';
-
-        // Configuration
-        const LEAF_DELAY = 80;  // Delay between each leaf animation (ms)
-        const TOTAL_LEAVES = 30;
-
-        /**
-         * Animate leaf elements sequentially
-         * Creates a flowing reveal effect for the emblem leaves
-         */
-        function animateLeaves() {
-            for (let i = 1; i <= TOTAL_LEAVES; i++) {
-                const leaf = document.getElementById(`leaf-${i}`);
-                if (leaf) {
-                    setTimeout(() => {
-                        leaf.style.transition = 'opacity 0.5s ease-out';
-                        leaf.style.opacity = '1';
-                    }, i * LEAF_DELAY);
-                }
+        // Double-click on tie image to trigger animation
+        const triggerImage = document.getElementById('trigger-image');
+        triggerImage.addEventListener('dblclick', function () {
+            if (!curtainContainer.classList.contains('open')) {
+                triggerImage.classList.add('fade-out');
+                setTimeout(startAnimation, 150);
             }
-        }
+        });
 
-        // Start animation when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function () {
-                setTimeout(animateLeaves, 500);
-            });
-        } else {
-            // 500ms delay before starting splash animation
-            setTimeout(animateLeaves, 500);
-        }
     })();
 
 </script>
