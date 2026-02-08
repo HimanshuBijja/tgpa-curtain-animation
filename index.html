@@ -929,7 +929,7 @@
         // Animation timing configuration (in milliseconds)
         const CURTAIN_DELAY = 500;      // Delay before curtain starts opening
         const CURTAIN_DURATION = 2000;  // Duration of curtain animation
-        const LOGO_DELAY = 800;         // Delay after curtain starts for logo to appear
+        const LOGO_DELAY = 350;         // Delay after curtain starts for logo to appear
         const BUTTON_DELAY = 1200;      // Delay after curtain starts for button to appear
         const LEAF_ANIMATION_DELAY = 50; // Delay between each leaf animation
 
@@ -987,7 +987,7 @@
 
         // Double-click on tie image to trigger animation
         const triggerImage = document.getElementById('trigger-image');
-        triggerImage.addEventListener('dblclick', function () {
+        triggerImage.addEventListener('click', function () {
             if (!curtainContainer.classList.contains('open')) {
                 triggerImage.classList.add('fade-out');
                 setTimeout(startAnimation, 150);
