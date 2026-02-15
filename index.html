@@ -114,13 +114,11 @@
             width: 50%;
             height: 100%;
             background: linear-gradient(90deg,
-                    #0d1f3c 0%,
-                    #152a4d 15%,
-                    #1D3A6D 30%,
-                    #2a5298 50%,
-                    #1D3A6D 70%,
-                    #152a4d 85%,
-                    #0d1f3c 100%);
+                    #B8860B 0%,
+                    #DAA520 25%,
+                    #B8860B 50%,
+                    #DAA520 75%,
+                    #B8860B 100%);
             transform: translateX(0);
             transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
@@ -134,13 +132,11 @@
             width: 50%;
             height: 100%;
             background: linear-gradient(90deg,
-                    #0d1f3c 0%,
-                    #152a4d 15%,
-                    #1D3A6D 30%,
-                    #2a5298 50%,
-                    #1D3A6D 70%,
-                    #152a4d 85%,
-                    #0d1f3c 100%);
+                    #B8860B 0%,
+                    #DAA520 25%,
+                    #B8860B 50%,
+                    #DAA520 75%,
+                    #B8860B 100%);
             transform: translateX(0);
             transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
@@ -158,12 +154,12 @@
             background: repeating-linear-gradient(90deg,
                     transparent 0px,
                     transparent 30px,
-                    rgba(0, 0, 0, 0.1) 30px,
-                    rgba(0, 0, 0, 0.1) 35px,
+                    rgba(0, 0, 0, 0.15) 30px,
+                    rgba(0, 0, 0, 0.15) 35px,
                     transparent 35px,
                     transparent 60px,
-                    rgba(255, 255, 255, 0.05) 60px,
-                    rgba(255, 255, 255, 0.05) 62px);
+                    rgba(255, 215, 0, 0.1) 60px,
+                    rgba(255, 215, 0, 0.1) 62px);
             pointer-events: none;
         }
 
@@ -177,8 +173,8 @@
             width: 100%;
             height: 60px;
             background: linear-gradient(180deg,
-                    #0a1628 0%,
-                    #0d1f3c 50%,
+                    #8B4513 0%,
+                    #B8860B 50%,
                     transparent 100%);
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
@@ -556,6 +552,49 @@
             visibility: hidden;
         }
 
+        /* ==================== INAUGURATION LOGOS ==================== */
+        .inauguration-logos {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding: 40px 60px;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .logo-left {
+            max-height: 200px;
+            max-width: 200px;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(139, 69, 19, 0.4)) brightness(1.1);
+            opacity: 0.95;
+            align-self: center;
+        }
+
+        .logo-center {
+            
+            max-height: 200px;
+            max-width: 200px;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(139, 69, 19, 0.4)) brightness(1.1);
+            opacity: 0.95;
+            align-self: center;
+        }
+
+        .logo-right {
+            max-height: 350px;
+            max-width: 300px;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(139, 69, 19, 0.4)) brightness(1.1);
+            opacity: 0.95;
+            align-self: center;
+        }
+
         /* ==================== BACKGROUND SECTION ==================== */
         .background {
             position: fixed;
@@ -896,9 +935,15 @@
     <div class="curtain-container" id="curtain-container">
         <div class="curtain-left"></div>
         <div class="curtain-right"></div>
-        <div class="curtain-trigger">
-            <img src="tie.png" alt="Double-click to open" id="trigger-image">
+        
+        <!-- Inauguration Logos -->
+        <div class="inauguration-logos">
+            <img src="logos/Telangana-Police-Department-Logo.png" alt="Telangana Police Department" class="logo-left">
+            <img src="logos/telengana-rising.jpeg" alt="Telangana Rising" class="logo-center">
+            <img src="logos/tgpa-logo.png" alt="TGPA Logo" class="logo-right">
         </div>
+        
+       
     </div>
 
 
