@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Intro Screen</title>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+        /* Start Image */
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url("start-frame.png") no-repeat center center;
+            background-size: cover;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* Video */
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            display: none;
+            pointer-events: none; /* no controls / hover */
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="startScreen"></div>
+
+<video id="myVideo" preload="auto">
+    <source src="video6.mp4" type="video/mp4">
+</video>
+
+<script>
+    const startScreen = document.getElementById("startScreen");
+    const video = document.getElementById("myVideo");
+
+    function enterFullscreen(element) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    }
+
+    // Start when clicking on start image
+    startScreen.addEventListener("click", function () {
+
+        // Hide start image
+        startScreen.style.display = "none";
+
+        // Show video
+        video.style.display = "block";
+
+        // Play video
+        video.play();
+
+        // Enter fullscreen
+        // enterFullscreen(document.documentElement);
+    });
+
+    // Redirect after video ends
+    video.addEventListener("ended", function () {
+        window.location.href = "http://100.71.234.30:8910";
+    });
+</script>
+
+</body>
+</html>
